@@ -1,6 +1,7 @@
 package irani.controller;
 
 import ch.qos.logback.core.encoder.EchoEncoder;
+import irani.DTO.PrintsByUnitDTO;
 import irani.entities.PrintData;
 import irani.services.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,5 +24,10 @@ public class PrintReportController {
     @GetMapping("/report")
     public ResponseEntity<List<PrintData>> getReports () throws Exception {
         return ResponseEntity.ok(reportService.readCsv());
+    }
+
+    @GetMapping("/report/unit")
+    public ResponseEntity<List<PrintsByUnitDTO>> getReportUnits () throws Exception {
+        return ResponseEntity.ok(reportService.getPrintsByUnit());
     }
 }
