@@ -1,6 +1,8 @@
 package irani.controller;
 
 import ch.qos.logback.core.encoder.EchoEncoder;
+import irani.DTO.DepartmentReportDTO;
+import irani.DTO.PrintByDepartmentDTO;
 import irani.DTO.PrintsByUnitDTO;
 import irani.entities.PrintData;
 import irani.services.ReportService;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -29,5 +32,10 @@ public class PrintReportController {
     @GetMapping("/report/unit")
     public ResponseEntity<List<PrintsByUnitDTO>> getReportUnits () throws Exception {
         return ResponseEntity.ok(reportService.getPrintsByUnit());
+    }
+
+    @GetMapping("/report/unit/department")
+    public ResponseEntity<DepartmentReportDTO> getReportUnitDepartments (@RequestParam String unit) throws Exception {
+        return ResponseEntity.ok(reportService.getPrintsByDepartment(unit));
     }
 }
