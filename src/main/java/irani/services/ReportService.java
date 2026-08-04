@@ -13,10 +13,7 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -50,10 +47,16 @@ public class ReportService {
         }
     }
 
-    public List<PrintsByUnitDTO> getPrintsByUnit() throws Exception {
+    public List<PrintsByUnitDTO> getPrintsByUnit(String unit) throws Exception {
 
         try {
             List<PrintData> prints = readCsv();
+
+            if (unit != null && !unit.isEmpty()) {
+                prints = prints.stream().filter(print ->
+                        getUnitByIp(print.getEnderecoDispositivo()).equals(unit)
+                ).toList();
+            }
 
             return prints.stream()
                     .collect(Collectors.groupingBy(
@@ -178,7 +181,8 @@ public class ReportService {
                     .filter(print -> ips.stream()
                             .anyMatch(ip -> print.getEnderecoDispositivo().startsWith(ip)))
                     .toList();
-            
+
+            Double totalPrints = printsFiltered.stream().mapToDouble(PrintData::getTotalImpresso).sum();
 
             Map<String, Long> departments = printsFiltered.stream()
                     .collect(Collectors.groupingBy(
@@ -186,11 +190,13 @@ public class ReportService {
                             Collectors.summingLong(PrintData::getTotalImpresso)
                     ));
 
+            Map<String, Double> departmentPercentage = departments.entrySet().stream().collect(Collectors.toMap( entry -> entry.getKey(), entry -> (entry.getValue() / totalPrints) * 100));
             List<PrintByDepartmentDTO> departmentList = departments.entrySet()
-                    .stream()
+                    .stream().sorted(Map.Entry.<String, Long>comparingByValue().reversed())
                     .map(entry -> new PrintByDepartmentDTO(
-                            entry.getKey(),
-                            entry.getValue()
+                            entry.getKey().toUpperCase(),
+                            entry.getValue(),
+                            departmentPercentage.get(entry.getKey())
                     ))
                     .toList();
 
@@ -203,6 +209,10 @@ public class ReportService {
             throw new Exception("Failed to filter prints by department: " + e.getMessage());
         }
     }
+
+
+
+
 
 
 

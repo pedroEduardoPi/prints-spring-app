@@ -2,5 +2,6 @@ package irani.DTO;
 
 public record PrintByDepartmentDTO(
         String department,
-        Long total
+        Long total,
+        Double percentage
 ) {}

@@ -30,8 +30,8 @@ public class PrintReportController {
     }
 
     @GetMapping("/report/unit")
-    public ResponseEntity<List<PrintsByUnitDTO>> getReportUnits () throws Exception {
-        return ResponseEntity.ok(reportService.getPrintsByUnit());
+    public ResponseEntity<List<PrintsByUnitDTO>> getReportUnits (@RequestParam(required = false) String unit) throws Exception {
+        return ResponseEntity.ok(reportService.getPrintsByUnit(unit));
     }
 
     @GetMapping("/report/unit/department")
